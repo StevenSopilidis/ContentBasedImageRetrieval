@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 from PIL import Image
+import numpy as np
 
 class FeatureExtractor:
     """
@@ -30,7 +31,7 @@ class FeatureExtractor:
             )
         ])
 
-    def extract(self, image: Image) -> torch.tensor:
+    def extract(self, image: Image) -> np.array:
         """
         Function that extracts features from given image
 
@@ -47,7 +48,7 @@ class FeatureExtractor:
             features = self.model(X)
             features = features.squeeze() # remove batch dimension
 
-        return features 
+        return features.numpy()
     
 
 def load_image(path: str) -> Image:
