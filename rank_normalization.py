@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
+import math
 
 
 def get_ranked_lists(query_features: np.array, dataset_features: np.array) -> dict:
@@ -49,8 +50,8 @@ def find_rank(ranked_list: np.array, target_idx: int) -> int:
     for idx, rank in ranked_list:
         if idx == target_idx:
             return rank
-        
-    return len(ranked_list)
+    
+    return -math.inf 
 
 def rank_normalization(ranked_lists: dict, L: int) -> dict:
     """

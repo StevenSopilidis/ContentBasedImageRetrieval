@@ -1,5 +1,6 @@
 import numpy as np
 from rank_normalization import find_rank
+import math
 
 def construct_hypergraph(normalized_ranks: dict, k: int) -> np.array:
     """
@@ -19,13 +20,16 @@ def construct_hypergraph(normalized_ranks: dict, k: int) -> np.array:
     for i in range(n):
         neighbors_i = sorted(enumerate(normalized_ranks[i]), key=lambda x: x[1])[:k]
 
-        for j in neighbors_i:
-            neighbors_j = sorted(enumerate(normalized_ranks[j[0]]), key=lambda x: x[1])[:k]
+        for j in range(n):
+            neighbors_j = sorted(enumerate(normalized_ranks[j]), key=lambda x: x[1])[:k]
 
+            if find_rank(neighbors_i, j) == -math.inf: # check if v_j does not belong ot e_i
+                continue
+
+            # calculate r(e_i, v_j)
             for x in neighbors_j:
-                wp_ij = 1 - np.log(find_rank(normalized_ranks[i], j[0]) + 1) / np.log(k)
-                wp_jx = 1 - np.log(find_rank(normalized_ranks[j[0]], x[0]) + 1) / np.log(k)
+                
 
-                incidence_matrix[i, x[0]] += wp_ij * wp_jx
+    print(incidence_matrix)
 
     return incidence_matrix
