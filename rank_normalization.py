@@ -51,7 +51,7 @@ def find_rank(ranked_list: np.array, target_idx: int) -> int:
         if idx == target_idx:
             return rank
     
-    return -math.inf 
+    return 0
 
 def rank_normalization(ranked_lists: dict, L: int) -> dict:
     """

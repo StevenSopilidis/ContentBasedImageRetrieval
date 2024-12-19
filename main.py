@@ -25,4 +25,4 @@ normalized_scores = rank_normalization(ranked_lists, L)
 # B) Hypergraph construction
 hypergraph = construct_hypergraph(normalized_scores, k)
 
-# print(hypergraph)
+print(hypergraph.shape)
