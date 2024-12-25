@@ -17,7 +17,7 @@ def get_pairwise_similarity(ei: int, vi: int, vj: int, w: np.array, h: np.array)
     
     return w[ei] * h[ei, vi] * h[ei, vj]
 
-def get_similarity_mesage(vi: int, vj: int, w: np.array, h: np.array) -> float:
+def get_similarity_measure(vi: int, vj: int, w: np.array, h: np.array) -> float:
     """
     Function that calculates similarity measure c(vi, vj)
     
@@ -32,7 +32,7 @@ def get_similarity_mesage(vi: int, vj: int, w: np.array, h: np.array) -> float:
     """
     
     n = w.shape[0] # number of hyperedges
-    sum = 0
+    sum = 0.0
     for i in range(n):
         sum += get_pairwise_similarity(i, vi, vj, w, h)
         
@@ -50,11 +50,11 @@ def get_new_weight_matrix(w: np.array, h: np.array) -> np.array:
         np.array: new weight matrix
     """
     
-    n = h.shape[0] # number of vertices
+    n = h.shape[1] # number of vertices
     c = np.zeros((n, n))
     
     for i in range(n):
         for j in range(n):
-            c[i, j] = get_similarity_mesage(i, j, w, h)
+            c[i, j] = get_similarity_measure(i, j, w, h)
             
     return c * c
