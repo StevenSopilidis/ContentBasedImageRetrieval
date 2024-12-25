@@ -7,6 +7,7 @@ import numpy as np
 
 directory_path = "./data"
 k = 2
+T = 10
 data = os.listdir(directory_path)
 image_files = [os.path.join(directory_path, f) for f in data if os.path.isfile(os.path.join(directory_path, f))]
 images = [load_image(file) for file in image_files]
@@ -20,6 +21,8 @@ query_image = load_image("./query.jpg")
 query_features = extractor.extract(query_image)
 
 # A) RANK NORMALIZATION
+indices = np.arange(len(dataset_features))
+
 ranked_lists = get_ranked_lists(query_features, dataset_features)
 normalized_scores = rank_normalization(ranked_lists, L)
 
@@ -28,12 +31,29 @@ membership = compute_membership_measure(ranked_lists, k) # membership r(ei, vj) 
 hypergraph = construct_incidence_matrix(membership, len(dataset_features) + 1) # constructed hypergraph
 hyperedge_weights = compute_hyperedge_weights(hypergraph, k) # W
 
-# # C) Hyperedges similarities
-Sh = hypergraph @ hypergraph.T
-Sv = hypergraph.T @ hypergraph
-S = Sh * Sv
+for t in range(T):
+    # Step C) Hypergraph-based Similarities
+    Sh = hypergraph @ hypergraph.T
+    Sv = hypergraph.T @ hypergraph
+    S = Sh * Sv  # Element-wise product
 
-# # D) Cartesian Product of Hyperedge elements
-w = get_new_weight_matrix(hyperedge_weights, hypergraph)
+    # Step D) Cartesian Product-Based Similarity
+    C = get_new_weight_matrix(hyperedge_weights, hypergraph)
 
-print(w)
+    # Compute Affinity Matrix
+    W = C * S
+
+    # Generate New Ranked Lists
+    new_ranked_lists_dict = {}
+    for i in range(len(dataset_features)):
+        ranked_indices = np.argsort(-W[i])[:k]
+        new_ranked_lists_dict[i] = [(idx, W[i][idx]) for idx in ranked_indices]
+
+    # Update hyperedge
+    membership = compute_membership_measure(ranked_lists, k) 
+    hypergraph = construct_incidence_matrix(membership, len(dataset_features) + 1)
+    hyperedge_weights = compute_hyperedge_weights(hypergraph, k)
+
+    ranked_lists_dict = new_ranked_lists_dict
+
+print(ranked_lists_dict)
