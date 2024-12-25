@@ -1,6 +1,7 @@
 from utils import load_image, FeatureExtractor
 from rank_normalization import get_ranked_lists, rank_normalization
 from hypergraph import construct_hypergraph
+from cartesian_product import get_new_weight_matrix
 import os
 import numpy as np
 
@@ -23,6 +24,12 @@ ranked_lists = get_ranked_lists(query_features, dataset_features)
 normalized_scores = rank_normalization(ranked_lists, L)
 
 # B) Hypergraph construction
-hypergraph = construct_hypergraph(normalized_scores, k)
+hypergraph, w = construct_hypergraph(normalized_scores, k)
 
-print(hypergraph.shape)
+# C) Hyperedges similarities
+Sh = hypergraph @ hypergraph.T
+Sv = hypergraph.T @ hypergraph
+S = Sh * Sv
+
+# D) Cartesian Product of Hyperedge elements
+w = get_new_weight_matrix(w, hypergraph)

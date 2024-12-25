@@ -2,7 +2,7 @@ import numpy as np
 from rank_normalization import find_rank
 import math
 
-def construct_hypergraph(normalized_ranks: dict, k: int) -> np.array:
+def construct_hypergraph(normalized_ranks: dict, k: int) -> tuple[np.array, np.array]:
     """
     Function that constructs hypergraph 
 
@@ -11,7 +11,8 @@ def construct_hypergraph(normalized_ranks: dict, k: int) -> np.array:
         k: number of neighbors in the graph
 
     Returns:
-        np.array: numpy array that represents the hypergraph
+        tuple[np.array, np.array]: where the first element is the constructed hypergraph
+        and the second the weight matrix W
     """
 
     n = len(normalized_ranks.keys())
@@ -34,7 +35,8 @@ def construct_hypergraph(normalized_ranks: dict, k: int) -> np.array:
                     wp_xj = 1 - math.log(t_xj + 1) / math.log(k)
 
                     incidence_matrix[i, j] = wp_ix * wp_xj
-                    
-    print(incidence_matrix)
+    
+    # sum accross rows representing hyperedges 
+    w = np.sum(incidence_matrix, axis=1)
 
-    return incidence_matrix
+    return incidence_matrix, w
