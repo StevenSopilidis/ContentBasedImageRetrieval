@@ -4,6 +4,8 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 from PIL import Image
 import numpy as np
+import os
+from tqdm import tqdm
 
 class FeatureExtractor:
     """
@@ -51,15 +53,36 @@ class FeatureExtractor:
         return features.numpy()
     
 
-def load_image(path: str) -> Image:
+def load_image(path: str) -> Image.Image:
     """
-    Function for laoding an image
+    Function for loading an image
 
     Parameters:
         path: path to given image
 
     Returns:
-        Image: image that was loaded from disk
+        Image.Image: image that was loaded from disk
     """
     image = Image.open(path).convert("RGB")
     return image
+
+
+def load_images(path: str) -> list[Image.Image]:
+    """
+    Function for loading all images located inside a folder
+
+    Parameters:
+        path: path for given folder
+
+    Returns:
+        list[Image.Image]: list of images
+    """
+    image_files = []
+    for root, _, files in os.walk(path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if os.path.isfile(file_path):
+                image_files.append(file_path)
+    
+    images = [load_image(file) for file in tqdm(image_files, desc="Loading images", unit="image")]
+    return images
