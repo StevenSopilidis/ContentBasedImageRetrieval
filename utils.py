@@ -64,6 +64,7 @@ def load_image(path: str) -> Image.Image:
         Image.Image: image that was loaded from disk
     """
     image = Image.open(path).convert("RGB")
+    image = image.resize((128, 128)) # resize all images to 128x128
     return image
 
 
